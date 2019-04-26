@@ -1,0 +1,38 @@
+---------------------------------
+ # line chart
+ first_twelve = unrate[:12]
+plt.plot(unrate['DATE'][:12], unrate['VALUE'][:12])
+plt.xticks(rotation=90)
+plt.xlabel("Month")
+plt.ylabel("Unemployment Rate")
+plt.title("Monthly Unemployment Trends, 1948")
+plt.show()
+
+ 
+ ---------------------------------
+ # multiple line chart
+ 
+ fig = plt.figure(figsize=(10,6))
+colors = ['red', 'blue', 'green', 'orange', 'black']
+for i in range(5):
+    start_index = i*12
+    end_index = (i+1)*12
+    subset = unrate[start_index:end_index]
+    label = str(1948 + i)
+    plt.plot(subset['MONTH'], subset['VALUE'], c=colors[i], label=label)
+plt.legend(loc='upper left')
+plt.title("Monthly Unemployment Trends, 1948-1952")
+plt.xlabel("Month, Integer")
+plt.ylabel("Unemployment Rate, Percent")
+plt.show() 
+ 
+  
+ ---------------------------------
+ # bar chart
+ 
+ 
+ 
+ 
+ 
+ ---------------------------------
+ # scatter chart
