@@ -1,0 +1,180 @@
+# Python/Macro which searches through inbox and parses body of email that matches regex criteria
+# if criteria matches then macro runs excel and search a workbook with data and pulls in necessary fields
+
+import win32com.client as win32
+import datetime as dt
+import re
+
+session = win32.Dispatch("Outlook.Application").GetNamespace("MAPI")
+inbox = session.GetDefaultFolder(6)
+messages = inbox.Items
+
+pastday = dt.datetime.now() - dt.timedelta(days=1)
+pastday = pastday.strftime('%m/%d/%Y %H:%M %p')
+# messages = messages.Restrict("[ReceivedTime] >= '" + pastday + "'")
+
+employees = []
+review_start1 = []
+review_end1 = []
+
+
+for message in messages:
+    try:
+        if message.Subject == 'XXX':  # criteria for subject
+            sid = re.findall(r"([A-Z][0-9]{6})", message.body) #regex to find employee
+            daterange = re.findall(r"((?<=from ).*?(?= to)) to ((?<=to ).*?(?=[.]))", message.body) #regex to part dates
+
+            for i in sid:
+                employees.append(i)
+
+            for j, k in daterange:
+                review_start1.append(j)
+                review_end1.append(k)
+    except:
+        pass
+
+review_start = []
+review_end = []
+
+for m in review_start1:
+    new_start_date = dt.datetime.strptime(m, "%B %d, %Y",).strftime("%m/%d/%Y")
+    review_start.append(new_start_date)
+
+for n in review_end1:
+    new_end_date = dt.datetime.strptime(n, "%B %d, %Y",).strftime("%m/%d/%Y")
+    review_end.append(new_end_date)
+
+# os.startfile(r'C:\Users\XXX\AppData\Roaming\Microsoft\Excel\XLSTART\PERSONAL.XLSB') #path to personal workbook where macros are stored
+
+print(XXX)
+print(XXX)
+print(XXX)
+
+if employees:
+    xl = win32.Dispatch("Excel.Application")
+    xl.Visible = False
+    xl.Workbooks.Open(r'C:\Users\XXX\AppData\Roaming\Microsoft\Excel\XLSTART\PERSONAL.XLSB')
+    xl.Application.Run(r'PERSONAL.XLSB!<insert macro module>.<insert macro sub>', <insert optional args>)
+    xl = 0
+else:XXX No AWM Inquiries')
+
+# and message.Sender.GetExchangeUser().PrimarySmtpAddress == 'XXX': # if you wanted to search by sender
+
+###################################################
+###                    Macro                    ###
+###################################################
+
+Dim wbData, wbAWM As Workbook
+Dim wsData, wsAWM As Worksheet
+Dim employee As String
+Dim star_date As Date
+Dim en_date As Date
+
+Sub main(XXX As Variant, XXX As Variant, XXX As Variant) 'variables from python
+
+Dim dpath As String
+Dim current_month_number, current_year As Integer
+Dim current_month, datapath As String
+
+today = VBA.Format(Date, "mm-dd-yyyy")
+current_month = MonthName(Month(Date))
+current_year = Year(Date)
+current_month_number = Month(Date)
+
+dpath = "S:\XXX"
+
+Set wbData = Workbooks.Open(dpath)
+Set wsData = wbData.ActiveSheet
+
+For i = 0 To UBound(XXX) - 1
+    employee = XXX(i)
+    star_date = XXX(i)
+    en_date = XXX(i)
+    Call XXX
+Next
+
+wbData.Close False
+
+End Sub
+
+
+Sub XXX()
+
+Dim tpath, spath1, spath2, spath3, sid As String
+Dim startDate, endDate As Date
+Dim LR As Long
+Dim filter_rng As Range
+
+today = VBA.Format(Date, "mm-dd-yyyy")
+Application.ScreenUpdating = False
+
+tpath = "S:\XXX"
+spath1 = "S:\XXX"
+spath2 = "S:\XXX"
+spath3 = "S:\XXX"
+
+Set wbAWM = Workbooks.Open(tpath)
+Set wsAWM = wbAWM.ActiveSheet
+
+If wsData.AutoFilterMode = True Then 'Do Nothing
+Else
+    wsData.Range("A1").AutoFilter
+End If
+
+With wsData
+        .AutoFilter.ShowAllData
+        .Range("$A$1:$CU$20000").AutoFilter Field:=23, Criteria1:=XXX
+        .Range("$A$1:$CQ$20000").AutoFilter Field:=5, Criteria1:="<=" & XXX
+        .Range("$A$1:$CQ$20000").AutoFilter Field:=5, Criteria1:=">=" & XXX
+        
+        LR = .Range("A" & Rows.Count).End(xlUp).Row
+        Set filter_rng = Range("C2:C" & LR)
+        
+        .Range("B2:B" & LR).Copy wsAWM.Range("A2")
+        .Range("E2:E" & LR).Copy wsAWM.Range("B2")
+        .Range("F2:F" & LR).Copy wsAWM.Range("C2")
+        .Range("AH2:AH" & LR).Copy wsAWM.Range("D2")
+        .Range("AF2:AF" & LR).Copy wsAWM.Range("E2")
+        .Range("M2:M" & LR).Copy wsAWM.Range("F2")
+        .Range("AX2:AX" & LR).Copy wsAWM.Range("G2")
+        .Range("AW2:AW" & LR).Copy wsAWM.Range("H2") 
+        .Range("CO2:CO" & LR).Copy wsAWM.Range("I2")
+        .Range("CL2:CL" & LR).Copy wsAWM.Range("J2")
+        .Range("CN2:CN" & LR).Copy wsAWM.Range("K2")
+        .Range("X2:X" & LR).Copy wsAWM.Range("L2")
+        .Range("W2:W" & LR).Copy wsAWM.Range("M2")
+        .Range("N2:N" & LR).Copy wsAWM.Range("N2")
+        .Range("P2:P" & LR).Copy wsAWM.Range("O2")
+        .Range("I2:I" & LR).Copy wsAWM.Range("P2")
+        .Range("S2:S" & LR).Copy wsAWM.Range("Q2")
+        .Range("J2:J" & LR).Copy wsAWM.Range("R2")
+    End With
+
+If Range("A2").Value = "Case ID" Then Range("A2").EntireRow.Delete
+If Range("A2").Value = "" Then Range("A2") = "None"
+
+wsAWM.Activate
+Cells.HorizontalAlignment = xlHAlignLeft
+wsAWM.Range("A1:R1").EntireColumn.AutoFit
+
+wsAWM.Range("A2:A" & wsAWM.Rows.Count).RowHeight = 12.75
+
+    If Len(Dir(spath1)) = 0 Then
+        wbAWM.SaveAs Filename:=spath1
+    ElseIf Len(Dir(spath2)) = 0 Then
+        wbAWM.SaveAs Filename:=spath2
+    Else
+        wbAWM.SaveAs Filename:=spath3
+    End If
+
+wbAWM.Close
+wsData.AutoFilter.ShowAllData
+Range("A1").Select
+
+End Sub
+
+
+
+
+
+
