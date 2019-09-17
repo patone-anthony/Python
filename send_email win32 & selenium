@@ -1,0 +1,101 @@
+from dateutil.relativedelta import relativedelta
+from datetime import date
+import os
+import glob
+import time
+import win32com.client as win32
+from selenium import webdriver
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
+from shutil import copyfile
+
+today = date.today()
+last_week = (today - relativedelta(days=7))
+yesterday = (today - relativedelta(days=1))
+start_date = last_week.strftime('%Y%m%d')
+end_date = yesterday.strftime('%Y%m%d')
+start_date1 = last_week.strftime('%m.%d.%Y')
+end_date1 = yesterday.strftime('%m.%d.%Y')
+month_lag = (today - relativedelta(months=1))
+reporting_year = month_lag.year
+
+options = webdriver.ChromeOptions()
+options.add_argument('--headless')
+options.add_argument('--no-sandbox')
+options.add_argument('--disable-gpu')
+options.add_argument('--disable-dev-shm-usage')
+options.add_argument('window-size=1920x1480')
+options.binary_location = r'C:\Program Files (x86)\Google\Chrome\Application\chrome.exe'
+options.add_experimental_option('useAutomationExtension', False)
+chrome_driver_binary = r'C:\Users\XXX\Downloads\chromedriver.exe'
+driver = webdriver.Chrome(chrome_driver_binary, options=options)
+driver.get('XXX')
+
+time.sleep(2)
+
+driver.switch_to.frame(driver.find_element_by_tag_name("iframe"))
+
+WebDriverWait(driver, 3).until(EC.visibility_of_element_located((
+    By.XPATH, "//li[@class='XXX'and @data-index='1']"))).click()
+driver.switch_to.default_content()
+
+driver.switch_to.frame(driver.find_element_by_tag_name("iframe"))
+
+WebDriverWait(driver, 3).until(EC.visibility_of_element_located((
+    By.XPATH, "//select[@id='XXX']/option[@value='XXX']"))).click()
+
+driver.find_element_by_xpath("//select[@id='investigationQuery']/option[@value='XXX']").click()
+driver.find_element_by_xpath("//td[@id='XXX']").click()
+WebDriverWait(driver, 1)
+driver.find_element_by_xpath("//td[@id='XXX']").click()
+driver.switch_to.default_content()
+
+time.sleep(8)
+
+driver.close()
+
+mypath = r'C:\XXX'
+newest = max(glob.glob(mypath), key=os.path.getmtime)
+os.startfile(newest)
+
+xl = win32.Dispatch("Excel.Application")
+xl.Visible = False
+xl.Application.Run("PERSONAL.XLSB!<vba module>.<vba sub>")
+xl = 0
+
+
+def email_temp(distro):
+    outlook = win32.Dispatch('outlook.application')
+    mail = outlook.CreateItem(0)
+    mail.To = distro
+    mail.CC = 'XXX'
+    # attachment = "Path to the attachment"
+    # mail.Attachments.Add(attachment)
+    mail.Subject = f'XXX {start_date1} to {end_date1}'
+    mail.HTMLBody = '''
+        <p>XXX</p>
+        <p>XXX</p>
+        <p><a href={sp_site}>XXX{start_date}_{end_date}</a></p>
+        <p>Thank you,<br/>
+        Anthony</p>
+        <insert html formated fo>
+    mail.save()
+
+
+qa_distro = 'XXX'
+sp_site = f'XXX{start_date}_{end_date}.xlsx'
+
+qa_sdrive = 'S:\\XXX{}_{}.xlsx'.format(reporting_year, start_date, end_date)
+qa_zdrive = 'Z:\\XXX{}_{}.xlsx'.format(start_date, end_date)
+
+if os.path.exists(qa_zdrive):
+    print('File exists in SharePoint already')
+else:
+    copyfile(qa_sdrive, qa_zdrive)
+
+email_temp(qa_distro)
+
+
+
+
