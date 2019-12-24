@@ -1,5 +1,5 @@
-# Python/Macro which searches through inbox and parses body of email that matches regex criteria
-# if criteria matches then macro runs excel and search a workbook with data and pulls in necessary fields
+# Python/Macro that searches through inbox and parses body of email based on regex match
+# if criteria matches -> then macro runs and pulls necessary fields into workbook
 
 import win32com.client as win32
 import datetime as dt
